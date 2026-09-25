@@ -1,36 +1,28 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import Notifications from './Notifications';
+import { getCurrentYear, getFooterCopy, getLatestNotification } from './utils';
 
-describe('Notifications component', () => {
-  test('renders the title "Here is the list of notifications"', () => {
-    render(<Notifications />);
-    const titleElement = screen.getByText(/here is the list of notifications/i);
-    expect(titleElement).toBeInTheDocument();
+describe('utils tests', () => {
+  describe('getCurrentYear', () => {
+    test('returns the correct current year dynamically without time bomb', () => {
+      const currentYear = new Date().getFullYear();
+      expect(getCurrentYear()).toBe(currentYear);
+    });
   });
 
-  test('renders a button element', () => {
-    render(<Notifications />);
-    const buttonElement = screen.getByRole('button', { name: /close/i });
-    expect(buttonElement).toBeInTheDocument();
+  describe('getFooterCopy', () => {
+    test('returns "Holberton School" when argument is true', () => {
+      expect(getFooterCopy(true)).toBe('Holberton School');
+    });
+
+    test('returns "Holberton School main dashboard" when argument is false', () => {
+      expect(getFooterCopy(false)).toBe('Holberton School main dashboard');
+    });
   });
 
-  test('renders 3 list items (li elements) as notifications', () => {
-    render(<Notifications />);
-    const listItems = screen.getAllByRole('listitem');
-    expect(listItems).toHaveLength(3);
-  });
-
-  test('logs "Close button has been clicked" to console when button is clicked', () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-    
-    render(<Notifications />);
-    const buttonElement = screen.getByRole('button', { name: /close/i });
-    
-    fireEvent.click(buttonElement);
-    
-    expect(consoleSpy).toHaveBeenCalledWith('Close button has been clicked');
-    
-    consoleSpy.mockRestore();
+  describe('getLatestNotification', () => {
+    test('returns the correct notification string', () => {
+      expect(getLatestNotification()).toBe(
+        '<strong>Urgent requirement</strong> - complete by EOD'
+      );
+    });
   });
 });
