@@ -1,25 +1,30 @@
-import { render, screen } from "@testing-library/react";
-import App from "./App";
+import { render, screen } from '@testing-library/react';
+import App from './App';
 
-test("renders h1 with School Dashboard text", () => {
-  render(<App />);
-  const heading = screen.getByRole("heading", { level: 1, name: /school dashboard/i });
-  expect(heading).toBeInTheDocument();
-});
+describe('App component', () => {
+  test('renders 2 input elements', () => {
+    render(<App />);
+    const inputElements = screen.getAllByRole('textbox');
+    // Note: input type="password" is not matched by 'textbox' role, 
+    // so querying inputs directly ensures exact count verification:
+    const inputs = screen.getByRole('button').parentElement.querySelectorAll('input');
+    expect(inputs).toHaveLength(2);
+  });
 
-test("renders correct text in body and footer paragraphs", () => {
-  render(<App />);
+  test('renders 2 label elements with text Email and Password', () => {
+    render(<App />);
+    const emailLabel = screen.getByText(/email/i);
+    const passwordLabel = screen.getByText(/password/i);
 
-  const bodyText = screen.getByText(/login to access the full dashboard/i);
-  expect(bodyText).toBeInTheDocument();
+    expect(emailLabel).toBeInTheDocument();
+    expect(passwordLabel).toBeInTheDocument();
+    expect(emailLabel.tagName).toBe('LABEL');
+    expect(passwordLabel.tagName).toBe('LABEL');
+  });
 
-  const footerRegex = /copyright \d{4}.*holberton school/i;
-  const footerNode = screen.getByText(footerRegex);
-  expect(footerNode).toBeInTheDocument();
-});
-
-test("renders an image", () => {
-  render(<App />);
-  const image = screen.getByAltText(/holberton logo/i);
-  expect(image).toBeInTheDocument();
+  test("renders a button with the text 'OK'", () => {
+    render(<App />);
+    const buttonElement = screen.getByRole('button', { name: /ok/i });
+    expect(buttonElement).toBeInTheDocument();
+  });
 });
