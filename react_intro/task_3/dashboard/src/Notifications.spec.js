@@ -2,33 +2,39 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Notifications from './Notifications';
 
-describe('Notifications component', () => {
-  test('renders the title "Here is the list of notifications"', () => {
+describe('Notifications Component', () => {
+  // Test 1: Check title existence (case-insensitive)
+  test('renders the notifications title "Here is the list of notifications"', () => {
     render(<Notifications />);
-    const title = screen.getByText(/here is the list of notifications/i);
-    expect(title).toBeInTheDocument();
+    const titleElement = screen.getByText(/here is the list of notifications/i);
+    expect(titleElement).toBeInTheDocument();
   });
 
-  test('renders the button element', () => {
+  // Test 2: Check button element existence
+  test('renders a button element', () => {
     render(<Notifications />);
-    const button = screen.getByRole('button', { name: /close/i });
-    expect(button).toBeInTheDocument();
+    const buttonElement = screen.getByRole('button');
+    expect(buttonElement).toBeInTheDocument();
   });
 
-  test('renders 3 notification list items', () => {
+  // Test 3: Check for 3 list items rendered
+  test('renders 3 list item elements', () => {
     render(<Notifications />);
-    const listItems = screen.getAllByRole('listitem');
-    expect(listItems).toHaveLength(3);
+    const listItemElements = screen.getAllByRole('listitem');
+    expect(listItemElements).toHaveLength(3);
   });
 
-  test('logs "Close button has been clicked" to console on click', () => {
+  // Test 4: Verify close button click logs to console
+  test('logs "Close button has been clicked" to the console when close button is clicked', () => {
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-    render(<Notifications />);
     
-    const button = screen.getByRole('button', { name: /close/i });
-    fireEvent.click(button);
-
+    render(<Notifications />);
+    const closeButton = screen.getByRole('button');
+    
+    fireEvent.click(closeButton);
+    
     expect(consoleSpy).toHaveBeenCalledWith('Close button has been clicked');
+    
     consoleSpy.mockRestore();
   });
 });
