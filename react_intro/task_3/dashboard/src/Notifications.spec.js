@@ -1,27 +1,24 @@
+import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Notifications from './Notifications';
 
-describe('Notifications component tests', () => {
-  test('renders the title "Here is the list of notifications" ignoring case', () => {
+describe('Notifications component', () => {
+  it('renders the text Here is the list of notifications', () => {
     render(<Notifications />);
-    // Përdorimi i RegEx /.../i siguron që teksti gjehet pavarësisht shkronjave të mëdha/vogëla
-    const title = screen.getByText(/here is the list of notifications/i);
-    expect(title).toBeInTheDocument();
+    expect(screen.getByText(/here is the list of notifications/i)).toBeInTheDocument();
   });
 
-  test('renders a button element', () => {
+  it('renders the button element', () => {
     render(<Notifications />);
-    const button = screen.getByRole('button');
-    expect(button).toBeInTheDocument();
+    expect(screen.getByRole('button')).toBeInTheDocument();
   });
 
-  test('renders 3 list items', () => {
+  it('renders three list items', () => {
     render(<Notifications />);
-    const listItems = screen.getAllByRole('listitem');
-    expect(listItems).toHaveLength(3);
+    expect(screen.getAllByRole('listitem')).toHaveLength(3);
   });
 
-  test('logs "Close button has been clicked" to the console when button is clicked', () => {
+  it('logs Close button has been clicked to the console when clicked', () => {
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     render(<Notifications />);
     
