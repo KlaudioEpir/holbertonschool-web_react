@@ -3,39 +3,34 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import Notifications from './Notifications';
 
 describe('Notifications component', () => {
-  test('renders the notifications title', () => {
+  test('checks that the notifications title is rendered', () => {
     render(<Notifications />);
 
     expect(
-      screen.getByText('Here is the list of notifications', {
-        exact: false,
-      })
+      screen.getByText(/Here is the list of notifications/i)
     ).toBeInTheDocument();
   });
 
-  test('renders the close button', () => {
+  test('checks that the button is rendered', () => {
     render(<Notifications />);
 
     expect(screen.getByRole('button')).toBeInTheDocument();
   });
 
-  test('renders 3 notifications', () => {
+  test('checks that 3 notifications are rendered', () => {
     render(<Notifications />);
 
-    const notifications = screen.getAllByRole('listitem');
-
-    expect(notifications).toHaveLength(3);
+    expect(screen.getAllByRole('listitem')).toHaveLength(3);
   });
 
-  test('logs message when close button is clicked', () => {
+  test('checks that clicking the close button logs the correct message', () => {
     const consoleSpy = jest
       .spyOn(console, 'log')
       .mockImplementation(() => {});
 
     render(<Notifications />);
 
-    const button = screen.getByRole('button');
-    fireEvent.click(button);
+    fireEvent.click(screen.getByRole('button'));
 
     expect(consoleSpy).toHaveBeenCalledWith(
       'Close button has been clicked'
