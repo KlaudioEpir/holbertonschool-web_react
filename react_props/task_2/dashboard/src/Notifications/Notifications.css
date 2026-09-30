@@ -1,4 +1,30 @@
-.notification-items {
-  border: 3px dotted red;
-  padding: 10px;
+.Notifications {
+  position: relative;
+  border: 1px solid #e0e0e0;
+  padding: 8px 16px;
+}
+
+.Notifications p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.Notifications button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.Notifications ul {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+}
+
+.Notifications li {
+  padding: 4px 0;
 }

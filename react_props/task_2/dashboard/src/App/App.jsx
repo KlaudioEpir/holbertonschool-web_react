@@ -3,29 +3,28 @@ import Notifications from '../Notifications/Notifications';
 import Header from '../Header/Header';
 import Login from '../Login/Login';
 import Footer from '../Footer/Footer';
-import CourseList from '../CourseList/CourseList';
+import { getLatestNotification } from '../utils/utils';
+import './App.css';
 
-function App() {
-  const listNotifications = [
-    { id: 1, type: 'default', value: 'New course available' },
-    { id: 2, type: 'urgent', value: 'New resume available' },
-    { id: 3, type: 'urgent', html: { __html: '<u>Urgent requirement</u> - complete by EOD' } },
-  ];
+class App extends React.Component {
+  render() {
+    const notificationsList = [
+      { id: 1, type: 'default', value: 'New course available' },
+      { id: 2, type: 'urgent', value: 'New resume available' },
+      { id: 3, type: 'urgent', html: { __html: getLatestNotification() } },
+    ];
 
-  return (
-    <>
-      <div className="root-notifications">
-        <Notifications listNotifications={listNotifications} />
-      </div>
-      <div className="App">
-        <Header />
-        <div className="App-body">
+    return (
+      <>
+        <Notifications notifications={notificationsList} />
+        <div className="App">
+          <Header />
           <Login />
+          <Footer />
         </div>
-        <Footer />
-      </div>
-    </>
-  );
+      </>
+    );
+  }
 }
 
 export default App;
