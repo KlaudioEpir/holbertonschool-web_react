@@ -1,41 +1,42 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import Notifications from './Notifications';
+import { render, screen, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import Notifications from "./Notifications";
 
-describe('Notifications', () => {
-  test('renders the notifications title', () => {
+describe("Notifications component", () => {
+  test("renders the notifications title", () => {
     render(<Notifications />);
 
     expect(
-      screen.getByText('Here is the list of notifications', { exact: false })
+      screen.getByText(/here is the list of notifications/i),
     ).toBeInTheDocument();
   });
 
-  test('renders the close button', () => {
+  test("renders a close button", () => {
     render(<Notifications />);
 
-    expect(screen.getByRole('button')).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /close/i })).toBeInTheDocument();
   });
 
-  test('renders 3 notifications', () => {
+  test("renders 3 notification items", () => {
     render(<Notifications />);
 
-    expect(screen.getAllByRole('listitem')).toHaveLength(3);
+    const notifications = screen.getAllByRole("listitem");
+
+    expect(notifications).toHaveLength(3);
   });
 
-  test('logs a message when the close button is clicked', () => {
-    const consoleLog = jest.spyOn(console, 'log');
+  test("logs message when close button is clicked", () => {
+    const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
 
     render(<Notifications />);
 
-    const button = screen.getByRole('button');
+    const closeButton = screen.getByRole("button", { name: /close/i });
+    fireEvent.click(closeButton);
 
-    fireEvent.click(button);
-
-    expect(consoleLog).toHaveBeenCalledWith(
-      'Close button has been clicked'
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringMatching(/close button has been clicked/i),
     );
 
-    consoleLog.mockRestore();
+    consoleSpy.mockRestore();
   });
 });

@@ -1,7 +1,10 @@
-import logo from "./assets/holberton-logo.jpg"
+import logo from "./assets/holberton-logo.jpg";
+
 import "./App.css";
+
 const App = () => {
   const date = new Date();
+
   return (
     <>
       <div className="App-header">
@@ -19,4 +22,5 @@ const App = () => {
     </>
   );
 };
+
 export default App;

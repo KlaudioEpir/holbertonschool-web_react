@@ -1,39 +1,28 @@
-import React from 'react';
-import './Notifications.css';
-import closeIcon from './assets/close-button.png';
-import { getLatestNotification } from './utilsspec';
+import "./Notifications.css";
+import closeIcon from "./assets/close-button.png";
+import { getLatestNotification } from "./utils";
 
-export default function Notifications() {
-  const handleClose = () => {
-    console.log('Close button has been clicked');
-  };
+function Notifications() {
 
-  return (
-    <div className="notification-items">
-      <button
-        type="button"
-        aria-label="Close"
-        onClick={handleClose}
-        style={{
-          position: 'absolute',
-          top: '10px',
-          right: '10px',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-        }}
-      >
-        <img src={closeIcon} alt="close icon" style={{ width: '15px', height: '15px' }} />
-      </button>
-      <p>Here is the list of notifications</p>
-      <ul>
-        <li data-priority="default">New course available</li>
-        <li data-priority="urgent">New resume available</li>
-        <li
-          data-priority="urgent"
-          dangerouslySetInnerHTML={{ __html: getLatestNotification() }}
-        />
-      </ul>
-    </div>
-  );
+    const handleClick = () => {
+        console.log("Close button has been clicked");
+    }
+
+    return (
+        <div className="notification-items">
+            <p>Here is the list of notifications</p>
+
+            <ul>
+                <li data-priority="default">New course available</li>
+                <li data-priority="urgent">New resume available</li>
+                <li dangerouslySetInnerHTML={{ __html: getLatestNotification() }}></li>
+            </ul>
+            
+            <button style={{ position: "absolute", top: "15px", right: "20px" }} aria-label="Close" onClick={handleClick}>
+                <img style={{ width: "10px", height: "10px" }} src={closeIcon} />
+            </button>
+        </div >
+    )
 }
+
+export default Notifications;
