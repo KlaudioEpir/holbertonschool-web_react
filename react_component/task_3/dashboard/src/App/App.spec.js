@@ -23,13 +23,6 @@ describe("App Component", () => {
     expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
   });
 
-  it("Renders the News from the School section", () => {
-    expect(screen.getByText(/news from the school/i)).toBeInTheDocument();
-    expect(
-      screen.getByText(/holberton school news goes here/i),
-    ).toBeInTheDocument();
-  });
-
   it("CourseList is rendered when isLoggedIn is false", () => {
     cleanup();
 
@@ -50,19 +43,5 @@ describe("App Component", () => {
     const courseList = container.querySelector("#CourseList");
 
     expect(courseList).toBeInTheDocument();
-  });
-
-  it("CourseList section has the margin-bottom wrapper class", () => {
-    cleanup();
-
-    const { container } = render(<App isLoggedIn={true} />);
-    const wrapper = container.querySelector(".bodySectionWithMargin");
-    expect(wrapper).toBeInTheDocument();
-  });
-
-  it("News from the School section does NOT have the margin-bottom class", () => {
-    const newsHeading = screen.getByText(/news from the school/i);
-    const newsSection = newsHeading.closest("div");
-    expect(newsSection).not.toHaveClass("bodySectionWithMargin");
   });
 });

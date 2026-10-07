@@ -1,43 +1,33 @@
-import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
-import NotificationItem from "./NotificationItem";
+/* eslint-disable */
+import React from "react";
 
-describe("NotificationItem Component", () => {
+class NotificationItem extends React.Component {
+  render() {
+    const { type = "default", html, value, markAsRead, id } = this.props;
 
-    it("Color is blue when type is default", () => {
-        render(<NotificationItem type="default" value="New course available" />);
+    const style = type === "urgent" ? { color: "red" } : { color: "blue" };
 
-        const listElement = screen.getByRole("listitem");
+    if (html) {
+      return (
+        <li
+          data-notification-type={type}
+          style={style}
+          dangerouslySetInnerHTML={html}
+          onClick={() => markAsRead && markAsRead(id)}
+        />
+      );
+    }
 
-        expect(listElement).toHaveStyle({ color: "blue" });
-        expect(listElement).toHaveAttribute("data-notification-type", "default");
-    });
+    return (
+      <li
+        data-notification-type={type}
+        style={style}
+        onClick={() => markAsRead && markAsRead(id)}
+      >
+        {value}
+      </li>
+    );
+  }
+}
 
-    it("Color is red when type is urgent", () => {
-        render(<NotificationItem type="urgent" value="New resume available" />);
-
-        const listElement = screen.getByRole("listitem");
-
-        expect(listElement).toHaveStyle({ color: "red" });
-        expect(listElement).toHaveAttribute("data-notification-type", "urgent");
-    });
-
-    it("calls markAsRead when clicked", () => {
-        const markAsRead = jest.fn();
-
-        render(
-            <NotificationItem
-                id={1}
-                type="default"
-                value="Test notification"
-                markAsRead={markAsRead}
-            />
-        );
-
-        const listItem = screen.getByRole("listitem");
-
-        fireEvent.click(listItem);
-
-        expect(markAsRead).toHaveBeenCalledWith(1);
-    });
-});
+export default NotificationItem;

@@ -3,28 +3,25 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import Notifications from "./Notifications";
 
 describe("Notifications Component", () => {
+  it("logs message when notification is clicked", () => {
+    const notifications = [
+      { id: 1, type: "default", value: "New course available" },
+    ];
 
-    it("logs message when notification is clicked", () => {
+    const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
 
-        const notifications = [
-            { id: 1, type: "default", value: "New course available" },
-        ];
+    render(
+      <Notifications notifications={notifications} displayDrawer={true} />,
+    );
 
-        const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
+    const listItem = screen.getByText("New course available");
 
-        render(
-            <Notifications notifications={notifications} displayDrawer={true} />
-        );
+    fireEvent.click(listItem);
 
-        const listItem = screen.getByText("New course available");
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "Notification 1 has been marked as read",
+    );
 
-        fireEvent.click(listItem);
-
-        expect(consoleSpy).toHaveBeenCalledWith(
-            "Notification 1 has been marked as read"
-        );
-
-        consoleSpy.mockRestore();
-    });
-
+    consoleSpy.mockRestore();
+  });
 });

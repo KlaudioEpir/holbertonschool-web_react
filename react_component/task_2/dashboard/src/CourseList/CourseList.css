@@ -1,16 +1,19 @@
-#CourseList {
-  width: 90%;
-  margin: 40px auto 0;
-  border-collapse: collapse;
+.table-cell {
+    border-bottom: 1px solid gray;
+    border-right: 1px solid gray;
 }
 
-#CourseList th,
-#CourseList td {
-  border: 1px solid gray;
-  padding: 4px 8px;
-  text-align: left;
+.course-list {
+    margin-top: 20px;
+    width: 100%;
+    border-top: 1px solid gray;
+    border-left: 1px solid gray;
 }
 
-#CourseList thead tr:first-child th {
-  text-align: center;
+.courses-body {
+    height: 65vh;
+}
+
+.no-courses {
+    margin-bottom: 1px solid gray;
 }
