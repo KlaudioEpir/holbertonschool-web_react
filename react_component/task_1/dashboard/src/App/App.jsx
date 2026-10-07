@@ -1,6 +1,11 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import './App.css';
+// App/App.jsx
+import { Component, Fragment } from "react";
+import "./App.css";
+import Notifications from "../Notifications/Notifications.jsx";
+import Header from "../Header/Header.jsx";
+import Footer from "../Footer/Footer.jsx";
+import Login from "../Login/Login.jsx";
+import CourseList from "../CourseList/CourseList.jsx";
 
 class App extends Component {
   constructor(props) {
@@ -9,34 +14,52 @@ class App extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown);
+    window.addEventListener("keydown", this.handleKeyDown);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown);
+    window.removeEventListener("keydown", this.handleKeyDown);
   }
 
   handleKeyDown(event) {
-    if (event.ctrlKey && event.key === 'h') {
-      alert('Logging you out');
+    if (event && event.ctrlKey && event.key === "h") {
+      window.alert("Logging you out");
       this.props.logOut();
     }
   }
 
   render() {
+    const { isLoggedIn } = this.props;
+
+    const notificationsList = [
+      { id: 1, type: "default", value: "New course available" },
+      { id: 2, type: "urgent", value: "New resume available" },
+      {
+        id: 3,
+        type: "urgent",
+        html: "<strong>Urgent requirement</strong> - complete by EOD",
+      },
+    ];
+
+    const coursesList = [
+      { id: 1, name: "ES6", credit: 60 },
+      { id: 2, name: "Webpack", credit: 20 },
+      { id: 3, name: "React", credit: 40 },
+    ];
+
     return (
-      <div className="App">
-        {/* Your App layout / components go here */}
-      </div>
+      <Fragment>
+        <Notifications notifications={notificationsList} />
+        <Header />
+        {isLoggedIn ? <CourseList courses={coursesList} /> : <Login />}
+        <Footer />
+      </Fragment>
     );
   }
 }
 
-App.propTypes = {
-  logOut: PropTypes.func,
-};
-
 App.defaultProps = {
+  isLoggedIn: false,
   logOut: () => {},
 };
 
