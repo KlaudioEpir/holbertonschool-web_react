@@ -1,30 +1,43 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import Notifications from './Notifications';
+import "@testing-library/jest-dom";
+import { render, screen, fireEvent } from "@testing-library/react";
+import NotificationItem from "./NotificationItem";
 
-describe('Notifications Component', () => {
-  test('clicking on menu item calls handleDisplayDrawer', () => {
-    const handleDisplayDrawer = jest.fn();
-    render(<Notifications handleDisplayDrawer={handleDisplayDrawer} />);
-    
-    const menuItem = screen.getByText('Your notifications');
-    fireEvent.click(menuItem);
-    
-    expect(handleDisplayDrawer).toHaveBeenCalledTimes(1);
-  });
+describe("NotificationItem Component", () => {
 
-  test('clicking on close button calls handleHideDrawer', () => {
-    const handleHideDrawer = jest.fn();
-    render(
-      <Notifications
-        displayDrawer={true}
-        handleHideDrawer={handleHideDrawer}
-      />
-    );
-    
-    const closeButton = screen.getByRole('button', { name: /close/i });
-    fireEvent.click(closeButton);
-    
-    expect(handleHideDrawer).toHaveBeenCalledTimes(1);
-  });
+    it("Color is blue when type is default", () => {
+        render(<NotificationItem type="default" value="New course available" />);
+
+        const listElement = screen.getByRole("listitem");
+
+        expect(listElement).toHaveStyle({ color: "blue" });
+        expect(listElement).toHaveAttribute("data-notification-type", "default");
+    });
+
+    it("Color is red when type is urgent", () => {
+        render(<NotificationItem type="urgent" value="New resume available" />);
+
+        const listElement = screen.getByRole("listitem");
+
+        expect(listElement).toHaveStyle({ color: "red" });
+        expect(listElement).toHaveAttribute("data-notification-type", "urgent");
+    });
+
+    it("calls markAsRead when clicked", () => {
+        const markAsRead = jest.fn();
+
+        render(
+            <NotificationItem
+                id={1}
+                type="default"
+                value="Test notification"
+                markAsRead={markAsRead}
+            />
+        );
+
+        const listItem = screen.getByRole("listitem");
+
+        fireEvent.click(listItem);
+
+        expect(markAsRead).toHaveBeenCalledWith(1);
+    });
 });
