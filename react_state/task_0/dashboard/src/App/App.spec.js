@@ -1,26 +1,26 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { shallow } from 'enzyme';
 import App from './App';
 
 describe('App Component', () => {
-  test('default state for displayDrawer is false', () => {
-    const { container } = render(<App />);
-    expect(screen.queryByText('Here is the list of notifications')).not.toBeInTheDocument();
+  it('verify that default state for displayDrawer is false', () => {
+    const wrapper = shallow(<App />);
+    expect(wrapper.state('displayDrawer')).toBe(false);
   });
 
-  test('handleDisplayDrawer updates displayDrawer state to true', () => {
-    render(<App />);
-    const menuItem = screen.getByText('Your notifications');
-    fireEvent.click(menuItem);
-    expect(screen.getByText('Here is the list of notifications')).toBeInTheDocument();
+  it('verify that handleDisplayDrawer sets displayDrawer to true', () => {
+    const wrapper = shallow(<App />);
+    expect(wrapper.state('displayDrawer')).toBe(false);
+    
+    wrapper.instance().handleDisplayDrawer();
+    expect(wrapper.state('displayDrawer')).toBe(true);
   });
 
-  test('handleHideDrawer updates displayDrawer state to false', () => {
-    render(<App />);
-    const menuItem = screen.getByText('Your notifications');
-    fireEvent.click(menuItem);
-    const closeBtn = screen.getByRole('button', { name: /close/i });
-    fireEvent.click(closeBtn);
-    expect(screen.queryByText('Here is the list of notifications')).not.toBeInTheDocument();
+  it('verify that handleHideDrawer sets displayDrawer to false', () => {
+    const wrapper = shallow(<App />);
+    wrapper.setState({ displayDrawer: true });
+    
+    wrapper.instance().handleHideDrawer();
+    expect(wrapper.state('displayDrawer')).toBe(false);
   });
 });

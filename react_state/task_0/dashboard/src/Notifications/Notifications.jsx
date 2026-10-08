@@ -6,6 +6,10 @@ import closeIcon from '../assets/close-icon.png';
 import { StyleSheet, css } from 'aphrodite';
 
 class Notifications extends Component {
+  constructor(props) {
+    super(props);
+  }
+
   shouldComponentUpdate(nextProps) {
     return (
       nextProps.listNotifications.length > this.props.listNotifications.length ||
@@ -33,7 +37,6 @@ class Notifications extends Component {
           <div className={css(styles.notifications)}>
             <button
               style={{
-                ariaLabel: 'Close',
                 background: 'transparent',
                 border: 'none',
                 position: 'absolute',
