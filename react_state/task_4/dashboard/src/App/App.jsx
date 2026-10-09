@@ -83,7 +83,7 @@ class App extends Component {
 
       this.setState((prevState) => ({
         notifications: prevState.notifications.filter(
-          (notification) => notification.id !== id
+          (notification) => notification.id !== Number(id)
         ),
       }));
     };
