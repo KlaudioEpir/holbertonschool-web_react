@@ -79,14 +79,14 @@ class App extends Component {
     };
 
     this.markNotificationAsRead = (id) => {
-      console.log(`Notification ${id} has been marked as read`);
+  console.log(`Notification ${id} has been marked as read`);
 
-      this.setState((prevState) => ({
-        notifications: prevState.notifications.filter(
-          (notification) => notification.id !== id
-        ),
-      }));
-    };
+  this.setState((prevState) => ({
+    notifications: prevState.notifications.filter(
+      (notification) => notification.id !== id
+    ),
+  }));
+};
   }
 
   componentDidMount() {
