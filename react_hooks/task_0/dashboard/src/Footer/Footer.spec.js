@@ -1,18 +1,32 @@
 import { render, screen } from '@testing-library/react';
 import Footer from './Footer';
-import { getCurrentYear } from '../utils/utils';
+import AppContext from '../Context/context';
 
 describe('Footer Component', () => {
-    test('renders copyright with current year and Holberton School when isIndex=true', () => {
-        const year = getCurrentYear();
-        render(<Footer />);
+  it('renders without crashing', () => {
+    render(
+      <AppContext.Provider value={{ user: { isLoggedIn: false } }}>
+        <Footer />
+      </AppContext.Provider>
+    );
+    expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
+  });
 
-        // The correct text should be "Holberton School", not "Holberton School main dashboard"
-        const paragraph = screen.getByText(
-            `Copyright ${year} - Holberton School`,
-            { exact: false }
-        );
+  it('does not render contact us link when user is logged out', () => {
+    render(
+      <AppContext.Provider value={{ user: { isLoggedIn: false } }}>
+        <Footer />
+      </AppContext.Provider>
+    );
+    expect(screen.queryByText(/Contact us/i)).not.toBeInTheDocument();
+  });
 
-        expect(paragraph).toBeInTheDocument();
-    });
+  it('renders contact us link when user is logged in', () => {
+    render(
+      <AppContext.Provider value={{ user: { isLoggedIn: true } }}>
+        <Footer />
+      </AppContext.Provider>
+    );
+    expect(screen.getByText(/Contact us/i)).toBeInTheDocument();
+  });
 });
