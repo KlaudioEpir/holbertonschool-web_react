@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import Header from '../Header/Header';
 import Footer from '../Footer/Footer';
 import Login from '../Login/Login';
 import Notifications from '../Notifications/Notifications';
 import CourseList from '../CourseList/CourseList';
-import AppContext, { user as defaultUser, logOut as defaultLogOut } from '../Context/context';
+import AppContext, { user as defaultUser } from '../Context/context';
 import './App.css';
 
 export default function App() {
@@ -41,10 +41,6 @@ export default function App() {
       prevNotifications.filter((notification) => notification.id !== id)
     );
   }, []);
-
-  // Opsionale: Menaxhimi i eventit të tastierës (Ctrl+H për logOut) nëse kërkohej në projektet e kaluara,
-  // por tasku thotë: "Remove the handleKeydown function and its associated lifecycle methods"
-  // Prandaj e heqim plotësisht siç kërkohet.
 
   return (
     <AppContext.Provider value={{ user, logOut }}>
