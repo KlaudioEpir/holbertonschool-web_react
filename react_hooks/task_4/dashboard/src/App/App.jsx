@@ -48,6 +48,7 @@ export default function App() {
     });
   };
 
+  // Modernized functional App component
   const logOut = useCallback(() => {
     setUser(defaultUser);
   }, []);
