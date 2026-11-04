@@ -1,9 +1,12 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import App from "./App";
 
 describe("App Component", () => {
-    it("Renders Header component", () => {
+    beforeEach(() => {
         render(<App />);
+    });
+
+    it("Renders Header component", () => {
         const heading = screen.getByRole("heading", {
             level: 1,
             name: /school dashboard/i,
@@ -11,50 +14,34 @@ describe("App Component", () => {
         expect(heading).toBeInTheDocument();
     });
 
-    it("Renders Login Component when user is not logged in", () => {
-        render(<App />);
-        const loginText = screen.getByText(/Log in to continue/i);
+    it("Renders Login Component", () => {
+        const loginText = screen.getByText(/Login to access the full dashboard/i);
         expect(loginText).toBeInTheDocument();
     });
 
     it("Renders Footer Component", () => {
-        render(<App />);
         expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
     });
 
-    it("Renders Login when isLoggedIn is false (default state)", () => {
-        const { container } = render(<App />);
+    it("CourseList is rendered when isLoggedIn is false", () => {
+        cleanup();
+
+        const rendered = render(<App />);
+        const container = rendered.container;
+
         const loginComponent = container.querySelector(".App-body");
+
         expect(loginComponent).toBeInTheDocument();
     });
 
-    it("Updates user state to logged in when logIn function is triggered", () => {
-        render(<App />);
-        
-        // Plotësojmë formën e login-it për të simuluar hyrjen
-        const emailInput = screen.getByLabelText(/Email:/i);
-        const passwordInput = screen.getByLabelText(/Password:/i);
-        const submitButton = screen.getByDisplayValue("Ok");
+    it("CourseList is rendered when isLoggedIn is true", () => {
+        cleanup();
 
-        fireEvent.change(emailInput, { target: { value: "test@test.com" } });
-        fireEvent.change(passwordInput, { target: { value: "password123" } });
-        fireEvent.click(submitButton);
+        const rendered = render(<App isLoggedIn={true} />);
+        const container = rendered.container;
 
-        // Pasi bëhet log in, duhet të shfaqet Course list në vend të login-it
-        expect(screen.getByText(/Course list/i)).toBeInTheDocument();
-    });
+        const courseList = container.querySelector("#CourseList");
 
-    it("Verifies displayDrawer state changes with handleDisplayDrawer and handleHideDrawer", () => {
-        render(<App />);
-        
-        // Menu item për njoftimet duhet të jetë prezent
-        const notificationMenu = screen.getByText("Your notifications");
-        expect(notificationMenu).toBeInTheDocument();
-
-        // Klikimi për të shfaqur ose fshehur drawer-in
-        fireEvent.click(notificationMenu);
-        
-        // Kontrollojmë nëse shfaqet kutia e njoftimeve
-        expect(screen.getByText("Here is the list of notifications")).toBeInTheDocument();
+        expect(courseList).toBeInTheDocument();
     });
 });

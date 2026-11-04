@@ -12,9 +12,9 @@ import AppContext, { user as defaultUser } from '../Context/context';
 import "./App.css";
 
 export default function App() {
-  const [displayDrawer, setDisplayDrawer] = useState(false);
+  const [displayDrawer, setDisplayDrawer] = useState(true);
   const [user, setUser] = useState(defaultUser);
-  const [listNotifications, setListNotifications] = useState([
+  const [notifications, setNotifications] = useState([
     { id: 1, type: "default", value: "New course available" },
     { id: 2, type: "urgent", value: "New resume available" },
     {
@@ -53,7 +53,7 @@ export default function App() {
   }, []);
 
   const markNotificationAsRead = useCallback((id) => {
-    setListNotifications((prevNotifications) =>
+    setNotifications((prevNotifications) =>
       prevNotifications.filter((notification) => notification.id !== id)
     );
   }, []);
@@ -66,7 +66,7 @@ export default function App() {
 
           <div className="root-notifications">
             <Notifications
-              listNotifications={listNotifications}
+              listNotifications={notifications}
               displayDrawer={displayDrawer}
               handleDisplayDrawer={handleDisplayDrawer}
               handleHideDrawer={handleHideDrawer}
