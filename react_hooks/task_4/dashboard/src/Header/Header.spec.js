@@ -1,47 +1,82 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import Header from './Header';
-import AppContext from '../Context/context';
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import Header from "./Header";
+import AppContext from "../Context/context";
 
-describe('Header Component', () => {
-  it('renders without crashing', () => {
-    render(
-      <AppContext.Provider value={{ user: { isLoggedIn: false }, logOut: () => {} }}>
-        <Header />
-      </AppContext.Provider>
-    );
-    expect(screen.getByText('School dashboard')).toBeInTheDocument();
-  });
+describe("Header Component", () => {
+    it("Renders correct text", () => {
+        render(
+            <AppContext.Provider value={{ user: { isLoggedIn: false } }}>
+                <Header />
+            </AppContext.Provider>
+        );
 
-  it('does not render logoutSection when user is logged out', () => {
-    render(
-      <AppContext.Provider value={{ user: { isLoggedIn: false }, logOut: () => {} }}>
-        <Header />
-      </AppContext.Provider>
-    );
-    expect(screen.queryByText(/Welcome/i)).not.toBeInTheDocument();
-  });
+        const heading = screen.getByRole("heading", {
+            level: 1,
+            name: /School Dashboard/i,
+        });
+        expect(heading).toBeInTheDocument();
+    });
 
-  it('renders logoutSection when user is logged in', () => {
-    const user = { email: 'test@test.com', isLoggedIn: true };
-    render(
-      <AppContext.Provider value={{ user, logOut: () => {} }}>
-        <Header />
-      </AppContext.Provider>
-    );
-    expect(screen.getByText(/Welcome test@test.com/i)).toBeInTheDocument();
-  });
+    it("Renders an image", () => {
+        render(
+            <AppContext.Provider value={{ user: { isLoggedIn: false } }}>
+                <Header />
+            </AppContext.Provider>
+        );
 
-  it('calls logOut function when logout link is clicked', () => {
-    const logOutMock = jest.fn();
-    const user = { email: 'test@test.com', isLoggedIn: true };
-    render(
-      <AppContext.Provider value={{ user, logOut: logOutMock }}>
-        <Header />
-      </AppContext.Provider>
-    );
-    
-    const logoutLink = screen.getByText('logout');
-    fireEvent.click(logoutLink);
-    expect(logOutMock).toHaveBeenCalled();
-  });
+        const image = screen.getByAltText(/holberton logo/i);
+        expect(image).toBeInTheDocument();
+    });
+
+    it("does not render logoutSection when user is not logged in", () => {
+        render(
+            <AppContext.Provider value={{ user: { isLoggedIn: false } }}>
+                <Header />
+            </AppContext.Provider>
+        );
+
+        const logoutSection = screen.queryByText(/Welcome/i);
+        expect(logoutSection).not.toBeInTheDocument();
+    });
+
+    it("renders logoutSection when user is logged in", () => {
+        const user = {
+            email: "test@test.com",
+            password: "password123",
+            isLoggedIn: true,
+        };
+
+        render(
+            <AppContext.Provider value={{ user, logOut: jest.fn() }}>
+                <Header />
+            </AppContext.Provider>
+        );
+
+        const logoutSection = screen.getByText(/Welcome test@test.com/i);
+        expect(logoutSection).toBeInTheDocument();
+
+        const logoutLink = screen.getByRole("link", { name: /logout/i });
+        expect(logoutLink).toBeInTheDocument();
+    });
+
+    it("calls logOut function when logout link is clicked", async () => {
+        const user = {
+            email: "test@test.com",
+            password: "password123",
+            isLoggedIn: true,
+        };
+        const mockLogOut = jest.fn();
+
+        render(
+            <AppContext.Provider value={{ user, logOut: mockLogOut }}>
+                <Header />
+            </AppContext.Provider>
+        );
+
+        const logoutLink = screen.getByRole("link", { name: /logout/i });
+        await userEvent.click(logoutLink);
+
+        expect(mockLogOut).toHaveBeenCalledTimes(1);
+    });
 });

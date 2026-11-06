@@ -1,60 +1,77 @@
-import { useState, useEffect } from 'react';
-import './Login.css';
+import { useState } from "react";
+import "./Login.css";
 
-export default function Login() {
-  const [enableSubmit, setEnableSubmit] = useState(false);
-  const [formData, setFormData] = useState({ email: '', password: '' });
+function Login(props) {
+    const [enableSubmit, setEnableSubmit] = useState(false);
+    const [formData, setFormData] = useState({ email: "", password: "" });
 
-  const handleChangeEmail = (e) => {
-    const newEmail = e.target.value;
-    const newFormData = { ...formData, email: newEmail };
-    setFormData(newFormData);
-    validateForm(newFormData.email, newFormData.password);
-  };
+    const validateForm = (email, password) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const handleChangePassword = (e) => {
-    const newPassword = e.target.value;
-    const newFormData = { ...formData, password: newPassword };
-    setFormData(newFormData);
-    validateForm(newFormData.email, newFormData.password);
-  };
+        return emailRegex.test(email) && password.length >= 8;
+    };
 
-  const validateForm = (email, password) => {
-    if (email.includes('@') && email.includes('.') && password.length >= 8) {
-      setEnableSubmit(true);
-    } else {
-      setEnableSubmit(false);
-    }
-  };
+    const handleChangeEmail = (e) => {
+        const { value: email } = e.target;
+        const { password } = formData;
 
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    // Nëse ke prop-in onLogin ose logIn, thërritet këtu:
-    // p.sh: props.logIn(formData.email, formData.password);
-  };
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            email,
+        }));
+        setEnableSubmit(validateForm(email, password));
+    };
 
-  return (
-    <div className="App-body">
-      <p>Login to access the full dashboard</p>
-      <form onSubmit={handleLoginSubmit}>
-        <label htmlFor="email">Email:</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChangeEmail}
-        />
-        <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChangePassword}
-        />
-        <input type="submit" value="Ok" disabled={!enableSubmit} />
-      </form>
-    </div>
-  );
+    const handleChangePassword = (e) => {
+        const { value: password } = e.target;
+        const { email } = formData;
+
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            password,
+        }));
+        setEnableSubmit(validateForm(email, password));
+    };
+
+    const handleLoginSubmit = (e) => {
+        e.preventDefault();
+
+        const { email, password } = formData;
+
+        if (props.logIn) {
+            props.logIn(email, password);
+        }
+    };
+
+    const { email, password } = formData;
+
+    return (
+        <div className="App-body">
+            <p>Login to access the full dashboard</p>
+
+            <form onSubmit={handleLoginSubmit}>
+                <label htmlFor="email">Email</label>
+                <input
+                    type="text"
+                    id="email"
+                    name="email"
+                    value={email}
+                    onChange={handleChangeEmail}
+                />
+
+                <label htmlFor="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={password}
+                    onChange={handleChangePassword}
+                />
+
+                <input type="submit" value="OK" disabled={!enableSubmit} />
+            </form>
+        </div>
+    );
 }
+
+export default Login;

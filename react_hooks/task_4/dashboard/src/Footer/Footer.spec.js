@@ -1,32 +1,48 @@
-import { render, screen } from '@testing-library/react';
-import Footer from './Footer';
-import AppContext from '../Context/context';
+import { render, screen } from "@testing-library/react";
+import Footer from "./Footer";
+import AppContext from "../Context/context";
+import { getCurrentYear } from "../utils/utils";
 
-describe('Footer Component', () => {
-  it('renders without crashing', () => {
-    render(
-      <AppContext.Provider value={{ user: { isLoggedIn: false } }}>
-        <Footer />
-      </AppContext.Provider>
-    );
-    expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
-  });
+describe("Footer Component", () => {
+    it("renders copyright", () => {
+        const year = getCurrentYear();
+        render(<Footer />);
+        expect(
+            screen.getByText(`Copyright ${year} - Holberton School`, {
+                exact: false,
+            })
+        ).toBeInTheDocument();
+    });
 
-  it('does not render contact us link when user is logged out', () => {
-    render(
-      <AppContext.Provider value={{ user: { isLoggedIn: false } }}>
-        <Footer />
-      </AppContext.Provider>
-    );
-    expect(screen.queryByText(/Contact us/i)).not.toBeInTheDocument();
-  });
+    it("does NOT display contact link when logged out", () => {
+        const contextValue = {
+            user: { isLoggedIn: false },
+        };
+        render(
+            <AppContext.Provider value={contextValue}>
+                <Footer />
+            </AppContext.Provider>
+        );
+        expect(
+            screen.queryByRole("link", { name: /contact us/i })
+        ).not.toBeInTheDocument();
+    });
 
-  it('renders contact us link when user is logged in', () => {
-    render(
-      <AppContext.Provider value={{ user: { isLoggedIn: true } }}>
-        <Footer />
-      </AppContext.Provider>
-    );
-    expect(screen.getByText(/Contact us/i)).toBeInTheDocument();
-  });
+    it("displays contact link when logged in", () => {
+        const contextValue = {
+            user: {
+                email: "test@test.com",
+                password: "password123",
+                isLoggedIn: true,
+            },
+        };
+        render(
+            <AppContext.Provider value={contextValue}>
+                <Footer />
+            </AppContext.Provider>
+        );
+        expect(
+            screen.getByRole("link", { name: /contact us/i })
+        ).toBeInTheDocument();
+    });
 });

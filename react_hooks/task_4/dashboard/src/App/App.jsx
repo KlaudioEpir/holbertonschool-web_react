@@ -1,36 +1,116 @@
-import { useState, useCallback } from 'react';
-import CourseList from '../CourseList/CourseList';
+import axios from "axios";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import CourseList from "../CourseList/CourseList";
 import "../CourseList/CourseList.css";
-import Footer from '../Footer/Footer';
-import Header from '../Header/Header';
-import Login from '../Login/Login';
-import Notifications from '../Notifications/Notifications';
-import BodySection from '../BodySection/BodySection';
-import BodySectionWithMarginBottom from '../BodySection/BodySectionWithMarginBottom';
-import AppContext, { user as defaultUser } from '../Context/context';
-
+import Footer from "../Footer/Footer";
+import Header from "../Header/Header";
+import Login from "../Login/Login";
+import Notifications from "../Notifications/Notifications";
+import BodySection from "../BodySection/BodySection";
+import BodySectionWithMarginBottom from "../BodySection/BodySectionWithMarginBottom";
+import AppContext from "../Context/context";
+import { getLatestNotification } from "../utils/utils";
 import "./App.css";
 
-export default function App() {
-  const [displayDrawer, setDisplayDrawer] = useState(true);
-  const [user, setUser] = useState(defaultUser);
-  const [notifications, setNotifications] = useState([
-    { id: 1, type: "default", value: "New course available" },
-    { id: 2, type: "urgent", value: "New resume available" },
-    {
-      id: 3,
-      type: "urgent",
-      html: {
-        __html: "<strong>Urgent requirement</strong> - complete by EOD",
-      },
-    },
-  ]);
+const notificationsList = [
+  { id: 1, type: "default", value: "New course available" },
+  { id: 2, type: "urgent", value: "New resume available" },
+  {
+    id: 3,
+    type: "urgent",
+    html: { __html: "<strong>Urgent requirement</strong> - complete by EOD" },
+  },
+];
 
-  const coursesList = [
-    { id: 1, name: "ES6", credit: "60" },
-    { id: 2, name: "Webpack", credit: "20" },
-    { id: 3, name: "React", credit: "40" },
-  ];
+function normalizeNotifications(data) {
+  const nextNotifications = Array.isArray(data)
+    ? data
+    : Array.isArray(data?.notifications)
+      ? data.notifications
+      : [];
+
+  return nextNotifications.map((notification) =>
+    notification.html
+      ? {
+        ...notification,
+        html: { __html: getLatestNotification() },
+      }
+      : notification
+  );
+}
+
+function normalizeCourses(data) {
+  return Array.isArray(data)
+    ? data
+    : Array.isArray(data?.courses)
+      ? data.courses
+      : [];
+}
+
+function App() {
+  const { user: contextUser } = useContext(AppContext);
+  const removedNotificationIdsRef = useRef(new Set());
+
+  const [displayDrawer, setDisplayDrawer] = useState(true);
+  const [user, setUser] = useState(contextUser);
+  const [notifications, setNotifications] = useState(notificationsList);
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchNotifications = async () => {
+      try {
+        const { data } = await axios.get("/notifications.json");
+
+        if (isMounted) {
+          setNotifications(
+            normalizeNotifications(data).filter(
+              (notification) =>
+                !removedNotificationIdsRef.current.has(notification.id)
+            )
+          );
+        }
+      } catch {
+        // Ignore fetch errors during the app bootstrap flow.
+      }
+    };
+
+    fetchNotifications();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchCourses = async () => {
+      try {
+        const { data } = await axios.get("/courses.json");
+
+        if (isMounted) {
+          setCourses(normalizeCourses(data));
+        }
+      } catch {
+        // Ignore fetch errors during the app
+      }
+    };
+
+    fetchCourses();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
 
   const handleDisplayDrawer = useCallback(() => {
     setDisplayDrawer(true);
@@ -40,58 +120,66 @@ export default function App() {
     setDisplayDrawer(false);
   }, []);
 
-  const logIn = (email, password) => {
-    setUser({
+  const logIn = useCallback((email, password) => {
+    setUser((previousUser) => ({
+      ...previousUser,
       email,
       password,
       isLoggedIn: true,
-    });
-  };
+    }));
+  }, []);
 
-  // Modernized functional App component
   const logOut = useCallback(() => {
-    setUser(defaultUser);
+    setUser((previousUser) => ({
+      ...previousUser,
+      email: "",
+      password: "",
+      isLoggedIn: false,
+    }));
   }, []);
 
   const markNotificationAsRead = useCallback((id) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.filter((notification) => notification.id !== id)
+    removedNotificationIdsRef.current.add(id);
+
+    setNotifications((previousNotifications) =>
+      previousNotifications.filter((notification) => notification.id !== id)
     );
   }, []);
 
+  const contextValue = useMemo(() => ({ user, logOut }), [user, logOut]);
+
   return (
-    <AppContext.Provider value={{ user, logOut }}>
-      <>
-        <div className="notifications-header">
-          <Header />
-
-          <div className="root-notifications">
-            <Notifications
-              listNotifications={notifications}
-              displayDrawer={displayDrawer}
-              handleDisplayDrawer={handleDisplayDrawer}
-              handleHideDrawer={handleHideDrawer}
-              markAsRead={markNotificationAsRead}
-            />
-          </div>
+    <AppContext.Provider value={contextValue}>
+      <div className="notifications-header">
+        <Header />
+        <div className="root-notifications">
+          <Notifications
+            notifications={notifications}
+            displayDrawer={displayDrawer}
+            handleDisplayDrawer={handleDisplayDrawer}
+            handleHideDrawer={handleHideDrawer}
+            markNotificationAsRead={markNotificationAsRead}
+          />
         </div>
+      </div>
 
-        {user.isLoggedIn ? (
-          <BodySectionWithMarginBottom title="Course list">
-            <CourseList courses={coursesList} />
-          </BodySectionWithMarginBottom>
-        ) : (
-          <BodySectionWithMarginBottom title="Log in to continue">
-            <Login logIn={logIn} />
-          </BodySectionWithMarginBottom>
-        )}
+      {user.isLoggedIn ? (
+        <BodySectionWithMarginBottom title="Course list">
+          <CourseList courses={courses} />
+        </BodySectionWithMarginBottom>
+      ) : (
+        <BodySectionWithMarginBottom title="Log in to continue">
+          <Login logIn={logIn} />
+        </BodySectionWithMarginBottom>
+      )}
 
-        <BodySection title="News from the School">
-          <p>Holberton School News goes here</p>
-        </BodySection>
+      <BodySection title="News from the School">
+        <p>Holberton School News goes here</p>
+      </BodySection>
 
-        <Footer />
-      </>
+      <Footer />
     </AppContext.Provider>
   );
 }
+
+export default App;

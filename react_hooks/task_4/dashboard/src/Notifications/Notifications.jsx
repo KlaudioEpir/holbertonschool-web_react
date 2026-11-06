@@ -1,98 +1,64 @@
-import { memo } from 'react';
-import PropTypes from 'prop-types';
-import NotificationItem from './NotificationItem';
-import closeIcon from '../assets/close-icon.png';
-import './Notifications.css';
+import { memo } from "react";
+import closeIcon from "../assets/close-button.png";
+import NotificationItem from "./NotificationItem";
+import "./Notifications.css";
 
-const Notifications = memo(function Notifications({
-  displayDrawer,
-  listNotifications,
-  handleDisplayDrawer,
-  handleHideDrawer,
-  markAsRead,
+function Notifications({
+    notifications = [],
+    displayDrawer = false,
+    handleDisplayDrawer,
+    handleHideDrawer,
+    markNotificationAsRead,
 }) {
-  return (
-    <>
-      {displayDrawer ? (
-        <div className="menuItem" onClick={handleHideDrawer}>
-          Your notifications
-        </div>
-      ) : (
-        <div className="menuItem" onClick={handleDisplayDrawer}>
-          Your notifications
-        </div>
-      )}
-      {displayDrawer && (
-        <div className="Notifications">
-          <button
-            style={{
-              position: 'absolute',
-              right: '10px',
-              top: '10px',
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-            aria-label="Close"
-            onClick={(e) => {
-              console.log('Close button has been clicked');
-              handleHideDrawer && handleHideDrawer(e);
-            }}
-          >
-            <img src={closeIcon} alt="close" width="15px" />
-          </button>
-          <p>Here is the list of notifications</p>
-          {listNotifications.length === 0 ? (
-            <p>No new notification for now</p>
-          ) : (
-            <ul>
-              {listNotifications.map((notif) => (
-                <NotificationItem
-                  key={notif.id}
-                  id={notif.id}
-                  type={notif.type}
-                  value={notif.value}
-                  html={notif.html}
-                  markAsRead={markAsRead}
-                />
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
-    </>
-  );
-}, (prevProps, nextProps) => {
-  // Re-render vetëm nëse numri i njoftimeve ndryshon ose ndryshon gjendja e displayDrawer
-  return (
-    nextProps.listNotifications.length <= prevProps.listNotifications.length &&
-    nextProps.displayDrawer === prevProps.displayDrawer
-  );
-});
+    return (
+        <div className="notifications-container">
+            <div className="notification-title" onClick={handleDisplayDrawer}>
+                Your notifications
+            </div>
 
-Notifications.propTypes = {
-  displayDrawer: PropTypes.bool,
-  listNotifications: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      type: PropTypes.string.isRequired,
-      value: PropTypes.string,
-      html: PropTypes.shape({
-        __html: PropTypes.string,
-      }),
-    })
-  ),
-  handleDisplayDrawer: PropTypes.func,
-  handleHideDrawer: PropTypes.func,
-  markAsRead: PropTypes.func,
-};
+            {displayDrawer && (
+                <div className="notification-items">
+                    {notifications.length > 0 ? (
+                        <>
+                            <p>Here is the list of notifications</p>
+                            <ul>
+                                {notifications.map((notification) => (
+                                    <NotificationItem
+                                        key={notification.id}
+                                        id={notification.id}
+                                        type={notification.type}
+                                        html={notification.html}
+                                        value={notification.value}
+                                        markAsRead={markNotificationAsRead}
+                                    />
+                                ))}
+                            </ul>
+                        </>
+                    ) : (
+                        <p>No new notification for now</p>
+                    )}
 
-Notifications.defaultProps = {
-  displayDrawer: false,
-  listNotifications: [],
-  handleDisplayDrawer: () => {},
-  handleHideDrawer: () => {},
-  markAsRead: () => {},
-};
+                    <button
+                        aria-label="Close"
+                        onClick={handleHideDrawer}
+                        className="close-button"
+                    >
+                        <img alt="Close Button" src={closeIcon} />
+                    </button>
+                </div>
+            )}
+        </div>
+    );
+}
 
-export default Notifications;
+function arePropsEqual(prevProps, nextProps) {
+    return (
+        prevProps.notifications === nextProps.notifications &&
+        prevProps.displayDrawer === nextProps.displayDrawer &&
+        prevProps.handleDisplayDrawer === nextProps.handleDisplayDrawer &&
+        prevProps.handleHideDrawer === nextProps.handleHideDrawer &&
+        prevProps.markNotificationAsRead === nextProps.markNotificationAsRead
+    );
+}
+
+export default memo(Notifications, arePropsEqual);
